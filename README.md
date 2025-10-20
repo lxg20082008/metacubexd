@@ -76,20 +76,24 @@ services:
     image: ghcr.io/metacubex/metacubexd
     restart: always
     ports:
-      - '80:80'
+      - '8880:80'
+    environment:
+      - API_BASE_URL=http://meta:9090  # 使用容器名
+    depends_on:
+      - meta
 
-  # optional
   meta:
     container_name: meta
     image: docker.io/metacubex/mihomo:Alpha
     restart: always
-    pid: host
-    ipc: host
-    network_mode: host
+    ports:
+      - '7897:7897'  # 统一使用 7897
+      - '7898:7898'  # SOCKS5 端口
+      - '9090:9090'  # 外部控制
     cap_add:
-      - ALL
+      - NET_ADMIN
     volumes:
-      - ./config.yaml:/root/.config/mihomo
+      - ./config/config.yaml:/root/.config/mihomo/config.yaml
       - /dev/net/tun:/dev/net/tun
 ```
 
